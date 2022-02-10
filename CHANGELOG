@@ -1,3 +1,7 @@
+1.3.1:
+	Redirect all printf to stderr (	Change all printf to fprintf(stderr,)
+	Increment to 1.3.1 to make it easy to differentiate if this particular version is installed
+
 1.3.0:
 	Initial DSTAR AMBE support
 	Fixed random number generator
@@ -44,9 +48,9 @@
 	reduced error -> repeat thresholds for reduced noise bursts
 	ambe3600x2250 now correctly handles "Silence" frames
 	ambe Tone and Erasure frames are now indicated with T and E in errorbars
-	
-1.0.1	Fixed bugs: 
-	cur_mp->repeat was not being copied to prev_mp 
+
+1.0.1	Fixed bugs:
+	cur_mp->repeat was not being copied to prev_mp
 	logic to check for bad mbe frames was incorrect
 
 1.0	First release

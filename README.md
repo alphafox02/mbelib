@@ -1,12 +1,17 @@
-[![Build Status](https://travis-ci.org/szechyjs/mbelib.png?branch=master)](https://travis-ci.org/szechyjs/mbelib)
+mbelib 1.3.1
+
+Redirect all printf to stderr (	Change all printf to fprintf(stderr,)
+Increment to 1.3.1 to make it easy to differentiate if this particular version is installed
+
+THIS VERSION PURELY FOR ACADEMIC RESEARCH - DON'T USE THIS VERSION!
 
 PATENT NOTICE
 
     This source code is provided for educational purposes only.  It is
     a written description of how certain voice encoding/decoding
-    algorythims could be implemented.  Executable objects compiled or 
+    algorythims could be implemented.  Executable objects compiled or
     derived from this package may be covered by one or more patents.
-    Readers are strongly advised to check for any patent restrictions or 
+    Readers are strongly advised to check for any patent restrictions or
     licencing requirements before compiling or using this source code.
 
 mbelib 1.3.0

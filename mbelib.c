@@ -240,7 +240,7 @@ mbe_synthesizeSpeechf (float *aout_buf, mbe_parms * cur_mp, mbe_parms * prev_mp,
 
   if ((uvquality < 1) || (uvquality > 64))
     {
-      printf ("\nmbelib: Error - uvquality must be within the range 1 - 64, setting to default value of 3\n");
+      fprintf (stderr,"\nmbelib: Error - uvquality must be within the range 1 - 64, setting to default value of 3\n");
       uvquality = 3;
     }
 
@@ -482,14 +482,14 @@ mbe_floattoshort (float *float_buf, short *aout_buf)
       if (audio > 32760)
         {
 #ifdef MBE_DEBUG
-          printf ("audio clip: %f\n", audio);
+          fprintf (stderr,"audio clip: %f\n", audio);
 #endif
           audio = 32760;
         }
       else if (audio < -32760)
         {
 #ifdef MBE_DEBUG
-          printf ("audio clip: %f\n", audio);
+          fprintf (stderr,"audio clip: %f\n", audio);
 #endif
           audio = -32760;
         }

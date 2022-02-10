@@ -33,9 +33,9 @@ mbe_dumpImbe7100x4400Data (char *imbe_d)
     {
       if ((i == 7) || (i == 19) || (i == 31) || (i == 43) || (i == 54) || (i == 65))
         {
-          printf (" ");
+          fprintf (stderr," ");
         }
-      printf ("%i", *imbe);
+      fprintf (stderr,"%i", *imbe);
       imbe++;
     }
 }
@@ -51,21 +51,21 @@ mbe_dumpImbe7100x4400Frame (char imbe_fr[7][24])
     {
       if (j == 11)
         {
-          printf (" ");
+          fprintf (stderr," ");
         }
-      printf ("%i", imbe_fr[0][j]);
+      fprintf (stderr,"%i", imbe_fr[0][j]);
     }
-  printf (" ");
+  fprintf (stderr," ");
 
   for (j = 23; j >= 0; j--)
     {
       if (j == 11)
         {
-          printf (" ");
+          fprintf (stderr," ");
         }
-      printf ("%i", imbe_fr[1][j]);
+      fprintf (stderr,"%i", imbe_fr[1][j]);
     }
-  printf (" ");
+  fprintf (stderr," ");
 
   for (i = 2; i < 4; i++)
     {
@@ -73,11 +73,11 @@ mbe_dumpImbe7100x4400Frame (char imbe_fr[7][24])
         {
           if (j == 10)
             {
-              printf (" ");
+              fprintf (stderr," ");
             }
-          printf ("%i", imbe_fr[i][j]);
+          fprintf (stderr,"%i", imbe_fr[i][j]);
         }
-      printf (" ");
+      fprintf (stderr," ");
     }
   for (i = 4; i < 6; i++)
     {
@@ -85,15 +85,15 @@ mbe_dumpImbe7100x4400Frame (char imbe_fr[7][24])
         {
           if (j == 3)
             {
-              printf (" ");
+              fprintf (stderr," ");
             }
-          printf ("%i", imbe_fr[i][j]);
+          fprintf (stderr,"%i", imbe_fr[i][j]);
         }
-      printf (" ");
+      fprintf (stderr," ");
     }
   for (j = 22; j >= 0; j--)
     {
-      printf ("%i", imbe_fr[6][j]);
+      fprintf (stderr,"%i", imbe_fr[6][j]);
     }
 }
 
