@@ -22,9 +22,9 @@ mbelib 1.3.0
 
 Example building instructions on Ubuntu:
 
-    sudo apt-get update
-    sudo apt-get install git make cmake # Update packages
-    git clone <URL of git repository>   # Something like: git@github.com:USERNAME/mbelib.git
+    sudo apt update
+    sudo apt install git make cmake # Update packages
+    git clone https://github.com/lwvmobile/mbelib
     cd mbelib                           # Move into source folder
     mkdir build                         # Create build directory
     cd build                            # Move to build directory
