@@ -32,7 +32,7 @@ mbe_dumpImbe4400Data (char *imbe_d)
   imbe = imbe_d;
   for (i = 0; i < 88; i++)
     {
-      printf ("%i", *imbe);
+      fprintf (stderr,"%i", *imbe);
       imbe++;
     }
 }
@@ -49,9 +49,9 @@ mbe_dumpImbe7200x4400Data (char *imbe_d)
     {
       if ((i == 12) || (i == 24) || (i == 36) || (i == 48) || (i == 59) || (i == 70) || (i == 81))
         {
-          printf (" ");
+          fprintf (stderr," ");
         }
-      printf ("%i", *imbe);
+      fprintf (stderr,"%i", *imbe);
       imbe++;
     }
 }
@@ -67,21 +67,21 @@ mbe_dumpImbe7200x4400Frame (char imbe_fr[8][23])
     {
       for (j = 22; j >= 0; j--)
         {
-          printf ("%i", imbe_fr[i][j]);
+          fprintf (stderr,"%i", imbe_fr[i][j]);
         }
-      printf (" ");
+      fprintf (stderr," ");
     }
   for (i = 4; i < 7; i++)
     {
       for (j = 14; j >= 0; j--)
         {
-          printf ("%i", imbe_fr[i][j]);
+          fprintf (stderr,"%i", imbe_fr[i][j]);
         }
-      printf (" ");
+      fprintf (stderr," ");
     }
   for (j = 6; j >= 0; j--)
     {
-      printf ("%i", imbe_fr[7][j]);
+      fprintf (stderr,"%i", imbe_fr[7][j]);
     }
 }
 
@@ -196,13 +196,13 @@ mbe_decodeImbe4400Parms (char *imbe_d, mbe_parms * cur_mp, mbe_parms * prev_mp)
       if ((b0 >= 216) && (b0 <= 219))
         {
 #ifdef IMBE_DEBUG
-          printf ("Silence\n");
+          fprintf (stderr,"Silence\n");
 #endif
         }
       else
         {
 #ifdef IMBE_DEBUG
-          printf ("Invalid fundamental frequency\n");
+          fprintf (stderr,"Invalid fundamental frequency\n");
 #endif
         }
       return (1);
@@ -215,7 +215,7 @@ mbe_decodeImbe4400Parms (char *imbe_d, mbe_parms * cur_mp, mbe_parms * prev_mp)
   if ((L > 56) || (L < 9))
     {
 #ifdef IMBE_DEBUG
-      printf ("invalid L: %i\n", L);
+      fprintf (stderr,"invalid L: %i\n", L);
 #endif
       return (1);
     }
@@ -235,7 +235,7 @@ mbe_decodeImbe4400Parms (char *imbe_d, mbe_parms * cur_mp, mbe_parms * prev_mp)
     }
 
 #ifdef IMBE_DEBUG
-  printf ("b0:%i L:%i K:%i\n", b0, L, K);
+  fprintf (stderr,"b0:%i L:%i K:%i\n", b0, L, K);
 #endif
 
   // read bits from imbe_d into b0..bL+1
@@ -245,7 +245,7 @@ mbe_decodeImbe4400Parms (char *imbe_d, mbe_parms * cur_mp, mbe_parms * prev_mp)
     {
       bb[*bo1][*bo2] = imbe_d[i];
 #ifdef IMBE_DEBUG
-      printf ("bo1: %i,bo2: %i, ", *bo1, *bo2);
+      fprintf (stderr,"bo1: %i,bo2: %i, ", *bo1, *bo2);
 #endif
       bo1 += 2;
       bo2 += 2;
@@ -286,11 +286,11 @@ mbe_decodeImbe4400Parms (char *imbe_d, mbe_parms * cur_mp, mbe_parms * prev_mp)
   b2 = strtol (tmpstr, NULL, 2);
   Gm[1] = B2[b2];
 #ifdef IMBE_DEBUG
-  printf ("G1: %e, %s, %i\n", Gm[1], tmpstr, b2);
+  fprintf (stderr,"G1: %e, %s, %i\n", Gm[1], tmpstr, b2);
 #endif
 
 #ifdef IMBE_DEBUG
-  printf ("tmpstr: %s b2: %i g1: %e\n", tmpstr, b2, Gm[1]);
+  fprintf (stderr,"tmpstr: %s b2: %i g1: %e\n", tmpstr, b2, Gm[1]);
 #endif
 
   // decode G2..G6 (from b3..b7) with annex E
@@ -310,7 +310,7 @@ mbe_decodeImbe4400Parms (char *imbe_d, mbe_parms * cur_mp, mbe_parms * prev_mp)
       bm = strtol (tmpstr, NULL, 2);
       Gm[i] = (*ba2 * ((float) bm - powf (2, (*ba1 - 1)) + (float) 0.5));
 #ifdef IMBE_DEBUG
-      printf ("G%i: %e, %s, %i, ba1: %e, ba2: %e\n", i, Gm[i], tmpstr, bm, *ba1, *ba2);
+      fprintf (stderr,"G%i: %e, %s, %i, ba1: %e, ba2: %e\n", i, Gm[i], tmpstr, bm, *ba1, *ba2);
 #endif
       ba1 += 2;
       ba2 += 2;
@@ -332,16 +332,16 @@ mbe_decodeImbe4400Parms (char *imbe_d, mbe_parms * cur_mp, mbe_parms * prev_mp)
             }
           sum = sum + ((float) am * Gm[m] * cosf ((M_PI * (float) (m - 1) * ((float) i - 0.5)) / (float) 6));
 #ifdef IMBE_DEBUG
-          printf ("sum: %e ", sum);
+          fprintf (stderr,"sum: %e ", sum);
 #endif
         }
       Ri[i] = sum;
 #ifdef IMBE_DEBUG
-      printf ("R%i: %e\n", i, Ri[i]);
+      fprintf (stderr,"R%i: %e\n", i, Ri[i]);
 #endif
     }
 #ifdef IMBE_DEBUG
-  printf ("R1: %e\n", Ri[1]);
+  fprintf (stderr,"R1: %e\n", Ri[1]);
 #endif
 
   // load b8..bL+1 into Ci,k
@@ -395,10 +395,10 @@ mbe_decodeImbe4400Parms (char *imbe_d, mbe_parms * cur_mp, mbe_parms * prev_mp)
         }
     }
 #ifdef IMBE_DEBUG
-  printf ("T1: %e\n", Tl[1]);
+  fprintf (stderr,"T1: %e\n", Tl[1]);
 #endif
 
-  // determine log2Ml by applying ci,j to previous log2Ml 
+  // determine log2Ml by applying ci,j to previous log2Ml
   if (cur_mp->L <= 15)
     {
       rho = 0.4;
@@ -431,12 +431,12 @@ mbe_decodeImbe4400Parms (char *imbe_d, mbe_parms * cur_mp, mbe_parms * prev_mp)
       flokl[l] = ((float) prev_mp->L / (float) cur_mp->L) * (float) l;
       intkl[l] = (int) (flokl[l]);
 #ifdef IMBE_DEBUG
-      printf ("flokl: %e, intkl: %i ", flokl[l], intkl[l]);
+      fprintf (stderr,"flokl: %e, intkl: %i ", flokl[l], intkl[l]);
 #endif
       // eq. 76
       deltal[l] = flokl[l] - (float) intkl[l];
 #ifdef IMBE_DEBUG
-      printf ("deltal: %e ", deltal[l]);
+      fprintf (stderr,"deltal: %e ", deltal[l]);
 #endif
       // eq 77
       Sum77 = Sum77 + ((((float) 1 - deltal[l]) * prev_mp->log2Ml[intkl[l]]) + (deltal[l] * prev_mp->log2Ml[intkl[l] + 1]));
@@ -444,7 +444,7 @@ mbe_decodeImbe4400Parms (char *imbe_d, mbe_parms * cur_mp, mbe_parms * prev_mp)
   Sum77 = ((rho / (float) cur_mp->L) * Sum77);
 
 #ifdef IMBE_DEBUG
-  printf ("Sum77: %e\n", Sum77);
+  fprintf (stderr,"Sum77: %e\n", Sum77);
 #endif
 
   // Part 2
@@ -455,7 +455,7 @@ mbe_decodeImbe4400Parms (char *imbe_d, mbe_parms * cur_mp, mbe_parms * prev_mp)
       cur_mp->log2Ml[l] = Tl[l] + c1 + c2 - Sum77;
       cur_mp->Ml[l] = powf (2, cur_mp->log2Ml[l]);
 #ifdef IMBE_DEBUG
-      printf ("rho: %e c1: %e c2: %e Sum77: %e T%i: %e log2M%i: %e M%i: %e\n", rho, c1, c2, Sum77, l, Tl[l], l, cur_mp->log2Ml[l], l, cur_mp->Ml[l]);
+      fprintf (stderr,"rho: %e c1: %e c2: %e Sum77: %e T%i: %e log2M%i: %e M%i: %e\n", rho, c1, c2, Sum77, l, Tl[l], l, cur_mp->log2Ml[l], l, cur_mp->Ml[l]);
 #endif
     }
 

@@ -32,10 +32,10 @@ mbe_dumpAmbe2400Data (char *ambe_d)
   ambe = ambe_d;
   for (i = 0; i < 49; i++)
     {
-      printf ("%i", *ambe);
+      fprintf (stderr,"%i", *ambe);
       ambe++;
     }
-  printf (" ");
+  fprintf (stderr," ");
 }
 
 void
@@ -45,33 +45,33 @@ mbe_dumpAmbe3600x2400Frame (char ambe_fr[4][24])
   int j;
 
   // c0
-  printf ("ambe_fr c0: ");
+  fprintf (stderr,"ambe_fr c0: ");
   for (j = 23; j >= 0; j--)
     {
-      printf ("%i", ambe_fr[0][j]);
+      fprintf (stderr,"%i", ambe_fr[0][j]);
     }
-  printf (" ");
+  fprintf (stderr," ");
   // c1
-  printf ("ambe_fr c1: ");
+  fprintf (stderr,"ambe_fr c1: ");
   for (j = 22; j >= 0; j--)
     {
-      printf ("%i", ambe_fr[1][j]);
+      fprintf (stderr,"%i", ambe_fr[1][j]);
     }
-  printf (" ");
+  fprintf (stderr," ");
   // c2
-  printf ("ambe_fr c2: ");
+  fprintf (stderr,"ambe_fr c2: ");
   for (j = 10; j >= 0; j--)
     {
-      printf ("%i", ambe_fr[2][j]);
+      fprintf (stderr,"%i", ambe_fr[2][j]);
     }
-  printf (" ");
+  fprintf (stderr," ");
   // c3
-  printf ("ambe_fr c3: ");
+  fprintf (stderr,"ambe_fr c3: ");
   for (j = 13; j >= 0; j--)
     {
-      printf ("%i", ambe_fr[3][j]);
+      fprintf (stderr,"%i", ambe_fr[3][j]);
     }
-  printf (" ");
+  fprintf (stderr," ");
 }
 
 int
@@ -157,12 +157,12 @@ mbe_decodeAmbe2400Parms (char *ambe_d, mbe_parms * cur_mp, mbe_parms * prev_mp)
   silence = 0;
 
 #ifdef AMBE_DEBUG
-  printf ("\n");
+  fprintf (stderr,"\n");
 #endif
 
   // copy repeat from prev_mp
   cur_mp->repeat = prev_mp->repeat;
-  
+
   // check if frame is tone or other; this matches section 7.2 on the P25 Half rate vocoder annex doc
   b0 = 0;
   b0 |= ambe_d[0]<<6;
@@ -192,7 +192,7 @@ mbe_decodeAmbe2400Parms (char *ambe_d, mbe_parms * cur_mp, mbe_parms * prev_mp)
     int t6tab[8] = {0,0,0,1,1,1,1,0};
     int t5tab[8] = {0,0,1,0,1,1,0,1};
     //              V V V V V G G G     V = verified, G = guessed (and unused by all normal tone indices)
-    b1 = 0; 
+    b1 = 0;
     b1 |= t7tab[((ambe_d[6]<<2)|(ambe_d[7]<<1)|ambe_d[8])]<<7; //t7 128
     b1 |= t6tab[((ambe_d[6]<<2)|(ambe_d[7]<<1)|ambe_d[8])]<<6; //t6 64
     b1 |= t5tab[((ambe_d[6]<<2)|(ambe_d[7]<<1)|ambe_d[8])]<<5; //t5 32
@@ -242,7 +242,7 @@ mbe_decodeAmbe2400Parms (char *ambe_d, mbe_parms * cur_mp, mbe_parms * prev_mp)
     if(silence == 1)
     {
 #ifdef AMBE_DEBUG
-      printf ("Silence Frame\n");
+      fprintf (stderr,"Silence Frame\n");
 #endif
       cur_mp->w0 = ((float) 2 * M_PI) / (float) 32;
       f0 = (float) 1 / (float) 32;
@@ -254,16 +254,16 @@ mbe_decodeAmbe2400Parms (char *ambe_d, mbe_parms * cur_mp, mbe_parms * prev_mp)
         }
     }
 #ifdef AMBE_DEBUG
-    printf ("Tone Frame\n");
+    fprintf (stderr,"Tone Frame\n");
 #endif
     return (3);
   }
   //fprintf(stderr,"Voice Frame, Pitch = %f\n", powf(2, ((float)b0+195.626)/-46.368)*8000); // was 45.368
   //fprintf(stderr,"Voice Frame, rawPitch = %02d, Pitch = %f\n", b0, powf(2, ((-1*(float)(17661/((int)1<<12))) - (2.1336e-2 * ((float)b0+0.5))))*8000);
   //fprintf(stderr,"Voice Frame, Pitch = %f, ", powf(2, (-4.311767578125 - (2.1336e-2 * ((float)b0+0.5))))*8000);
- 
+
   // decode fundamental frequency w0 from b0 is already done
- 
+
   if (silence == 0)
     {
       // w0 from specification document
@@ -271,7 +271,7 @@ mbe_decodeAmbe2400Parms (char *ambe_d, mbe_parms * cur_mp, mbe_parms * prev_mp)
       //cur_mp->w0 = f0 * (float) 2 *M_PI;
       // w0 from patent filings
       //f0 = powf (2, ((float) b0 + (float) 195.626) / -(float) 46.368); // was 45.368
-      // w0 guess  
+      // w0 guess
       f0 = powf(2, (-4.311767578125 - (2.1336e-2 * ((float)b0+0.5))));
       cur_mp->w0 = f0 * (float) 2 *M_PI;
     }
@@ -283,7 +283,7 @@ mbe_decodeAmbe2400Parms (char *ambe_d, mbe_parms * cur_mp, mbe_parms * prev_mp)
   // decode L
   if (silence == 0)
     {
-      // L from specification document 
+      // L from specification document
       // lookup L in tabl3
       L = AmbePlusLtable[b0];
       // L formula from patent filings
@@ -313,11 +313,11 @@ mbe_decodeAmbe2400Parms (char *ambe_d, mbe_parms * cur_mp, mbe_parms * prev_mp)
           cur_mp->Vl[l] = AmbePlusVuv[b1][jl];
         }
 #ifdef AMBE_DEBUG
-      printf ("jl[%i]:%i Vl[%i]:%i\n", l, jl, l, cur_mp->Vl[l]);
+      fprintf (stderr,"jl[%i]:%i Vl[%i]:%i\n", l, jl, l, cur_mp->Vl[l]);
 #endif
     }
 #ifdef AMBE_DEBUG
-  printf ("\nb0:%i w0:%f L:%i b1:%i\n", b0, cur_mp->w0, L, b1);
+  fprintf (stderr,"\nb0:%i w0:%f L:%i b1:%i\n", b0, cur_mp->w0, L, b1);
 #endif
 
   // decode gain vector
@@ -333,7 +333,7 @@ mbe_decodeAmbe2400Parms (char *ambe_d, mbe_parms * cur_mp, mbe_parms * prev_mp)
   deltaGamma = AmbePlusDg[b2];
   cur_mp->gamma = deltaGamma + ((float) 0.5 * prev_mp->gamma);
 #ifdef AMBE_DEBUG
-  printf ("b2: %i, deltaGamma: %f gamma: %f gamma-1: %f\n", b2, deltaGamma, cur_mp->gamma, prev_mp->gamma);
+  fprintf (stderr,"b2: %i, deltaGamma: %f gamma: %f gamma-1: %f\n", b2, deltaGamma, cur_mp->gamma, prev_mp->gamma);
 #endif
 
 
@@ -370,7 +370,7 @@ mbe_decodeAmbe2400Parms (char *ambe_d, mbe_parms * cur_mp, mbe_parms * prev_mp)
   Gm[8] = AmbePlusPRBA58[b4][3];
 
 #ifdef AMBE_DEBUG
-  printf ("b3: %i Gm[2]: %f Gm[3]: %f Gm[4]: %f b4: %i Gm[5]: %f Gm[6]: %f Gm[7]: %f Gm[8]: %f\n", b3, Gm[2], Gm[3], Gm[4], b4, Gm[5], Gm[6], Gm[7], Gm[8]);
+  fprintf (stderr,"b3: %i Gm[2]: %f Gm[3]: %f Gm[4]: %f b4: %i Gm[5]: %f Gm[6]: %f Gm[7]: %f Gm[8]: %f\n", b3, Gm[2], Gm[3], Gm[4], b4, Gm[5], Gm[6], Gm[7], Gm[8]);
 #endif
 
   // compute Ri
@@ -391,11 +391,11 @@ mbe_decodeAmbe2400Parms (char *ambe_d, mbe_parms * cur_mp, mbe_parms * prev_mp)
         }
       Ri[i] = sum;
 #ifdef AMBE_DEBUG
-      printf ("R%i: %f ", i, Ri[i]);
+      fprintf (stderr,"R%i: %f ", i, Ri[i]);
 #endif
     }
 #ifdef AMBE_DEBUG
-  printf ("\n");
+  fprintf (stderr,"\n");
 #endif
 
   // generate first to elements of each Ci,k block from PRBA vector
@@ -445,8 +445,8 @@ mbe_decodeAmbe2400Parms (char *ambe_d, mbe_parms * cur_mp, mbe_parms * prev_mp)
   Ji[3] = AmbePlusLmprbl[L][2];
   Ji[4] = AmbePlusLmprbl[L][3];
 #ifdef AMBE_DEBUG
-  printf ("Ji[1]: %i Ji[2]: %i Ji[3]: %i Ji[4]: %i\n", Ji[1], Ji[2], Ji[3], Ji[4]);
-  printf ("b5: %i b6: %i b7: %i b8: %i\n", b5, b6, b7, b8);
+  fprintf (stderr,"Ji[1]: %i Ji[2]: %i Ji[3]: %i Ji[4]: %i\n", Ji[1], Ji[2], Ji[3], Ji[4]);
+  fprintf (stderr,"b5: %i b6: %i b7: %i b8: %i\n", b5, b6, b7, b8);
 #endif
 
   // Load Ci,k with the values from the HOC tables
@@ -462,7 +462,7 @@ mbe_decodeAmbe2400Parms (char *ambe_d, mbe_parms * cur_mp, mbe_parms * prev_mp)
         {
           Cik[1][k] = AmbePlusHOCb5[b5][k - 3];
 #ifdef AMBE_DEBUG
-          printf ("C1,%i: %f ", k, Cik[1][k]);
+          fprintf (stderr,"C1,%i: %f ", k, Cik[1][k]);
 #endif
         }
     }
@@ -476,7 +476,7 @@ mbe_decodeAmbe2400Parms (char *ambe_d, mbe_parms * cur_mp, mbe_parms * prev_mp)
         {
           Cik[2][k] = AmbePlusHOCb6[b6][k - 3];
 #ifdef AMBE_DEBUG
-          printf ("C2,%i: %f ", k, Cik[2][k]);
+          fprintf (stderr,"C2,%i: %f ", k, Cik[2][k]);
 #endif
         }
     }
@@ -490,7 +490,7 @@ mbe_decodeAmbe2400Parms (char *ambe_d, mbe_parms * cur_mp, mbe_parms * prev_mp)
         {
           Cik[3][k] = AmbePlusHOCb7[b7][k - 3];
 #ifdef AMBE_DEBUG
-          printf ("C3,%i: %f ", k, Cik[3][k]);
+          fprintf (stderr,"C3,%i: %f ", k, Cik[3][k]);
 #endif
         }
     }
@@ -504,12 +504,12 @@ mbe_decodeAmbe2400Parms (char *ambe_d, mbe_parms * cur_mp, mbe_parms * prev_mp)
         {
           Cik[4][k] = AmbePlusHOCb8[b8][k - 3];
 #ifdef AMBE_DEBUG
-          printf ("C4,%i: %f ", k, Cik[4][k]);
+          fprintf (stderr,"C4,%i: %f ", k, Cik[4][k]);
 #endif
         }
     }
 #ifdef AMBE_DEBUG
-  printf ("\n");
+  fprintf (stderr,"\n");
 #endif
 
   // inverse DCT each Ci,k to give ci,j (Tl)
@@ -531,13 +531,13 @@ mbe_decodeAmbe2400Parms (char *ambe_d, mbe_parms * cur_mp, mbe_parms * prev_mp)
                   ak = 2;
                 }
 #ifdef AMBE_DEBUG
-              printf ("j: %i Cik[%i][%i]: %f ", j, i, k, Cik[i][k]);
+              fprintf (stderr,"j: %i Cik[%i][%i]: %f ", j, i, k, Cik[i][k]);
 #endif
               sum = sum + ((float) ak * Cik[i][k] * cosf ((M_PI * (float) (k - 1) * ((float) j - (float) 0.5)) / (float) ji));
             }
           Tl[l] = sum;
 #ifdef AMBE_DEBUG
-          printf ("Tl[%i]: %f\n", l, Tl[l]);
+          fprintf (stderr,"Tl[%i]: %f\n", l, Tl[l]);
 #endif
           l++;
         }
@@ -566,20 +566,20 @@ mbe_decodeAmbe2400Parms (char *ambe_d, mbe_parms * cur_mp, mbe_parms * prev_mp)
       flokl[l] = ((float) prev_mp->L / (float) cur_mp->L) * (float) l;
       intkl[l] = (int) (flokl[l]);
 #ifdef AMBE_DEBUG
-      printf ("flok%i: %f, intk%i: %i ", l, flokl[l], l, intkl[l]);
+      fprintf (stderr,"flok%i: %f, intk%i: %i ", l, flokl[l], l, intkl[l]);
 #endif
       // eq. 41
       deltal[l] = flokl[l] - (float) intkl[l];
 #ifdef AMBE_DEBUG
-      printf ("delta%i: %f ", l, deltal[l]);
+      fprintf (stderr,"delta%i: %f ", l, deltal[l]);
 #endif
       // eq 43
       Sum43 = Sum43 + ((((float) 1 - deltal[l]) * prev_mp->log2Ml[intkl[l]]) + (deltal[l] * prev_mp->log2Ml[intkl[l] + 1]));
     }
   Sum43 = (((float) 0.65 / (float) cur_mp->L) * Sum43);
 #ifdef AMBE_DEBUG
-  printf ("\n");
-  printf ("Sum43: %f\n", Sum43);
+  fprintf (stderr,"\n");
+  fprintf (stderr,"Sum43: %f\n", Sum43);
 #endif
 
   // Part 2
@@ -608,10 +608,10 @@ mbe_decodeAmbe2400Parms (char *ambe_d, mbe_parms * cur_mp, mbe_parms * prev_mp)
           cur_mp->Ml[l] = unvc * exp ((float) 0.693 * cur_mp->log2Ml[l]);
         }
 #ifdef AMBE_DEBUG
-      printf ("flokl[%i]: %f, intkl[%i]: %i ", l, flokl[l], l, intkl[l]);
-      printf ("deltal[%i]: %f ", l, deltal[l]);
-      printf ("prev_mp->log2Ml[%i]: %f\n", l, prev_mp->log2Ml[intkl[l]]);
-      printf ("BigGamma: %f c1: %f c2: %f Sum43: %f Tl[%i]: %f log2Ml[%i]: %f Ml[%i]: %f\n", BigGamma, c1, c2, Sum43, l, Tl[l], l, cur_mp->log2Ml[l], l, cur_mp->Ml[l]);
+      fprintf (stderr,"flokl[%i]: %f, intkl[%i]: %i ", l, flokl[l], l, intkl[l]);
+      fprintf (stderr,"deltal[%i]: %f ", l, deltal[l]);
+      fprintf (stderr,"prev_mp->log2Ml[%i]: %f\n", l, prev_mp->log2Ml[intkl[l]]);
+      fprintf (stderr,"BigGamma: %f c1: %f c2: %f Sum43: %f Tl[%i]: %f log2Ml[%i]: %f Ml[%i]: %f\n", BigGamma, c1, c2, Sum43, l, Tl[l], l, cur_mp->log2Ml[l], l, cur_mp->Ml[l]);
 #endif
     }
 
