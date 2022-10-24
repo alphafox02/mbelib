@@ -17,8 +17,8 @@
 
 #ifndef _MBELIB_H
 #define _MBELIB_H
-//increment to 1.3.1 to easily differentiate this version when reporting
-#define MBELIB_VERSION "1.3.1"
+//increment to 1.3.2  dev build for testing changes
+#define MBELIB_VERSION "1.3.2"
 
 struct mbe_parameters
 {
