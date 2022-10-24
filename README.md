@@ -3,8 +3,6 @@ mbelib 1.3.1
 Redirect all printf to stderr (	Change all printf to fprintf(stderr,)
 Increment to 1.3.1 to make it easy to differentiate if this particular version is installed
 
-THIS VERSION PURELY FOR ACADEMIC RESEARCH - DON'T USE THIS VERSION!
-
 PATENT NOTICE
 
     This source code is provided for educational purposes only.  It is
