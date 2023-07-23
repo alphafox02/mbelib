@@ -160,6 +160,42 @@ mbe_decodeAmbe2450Parms (char *ambe_d, mbe_parms * cur_mp, mbe_parms * prev_mp)
   fprintf (stderr,"\n");
 #endif
 
+  int u0, u1, u2, u3;
+  u0 = u1 = u2 = u3 = 0;
+
+  for (i = 0; i < 12; i++)
+  {
+    u0 = u0 << 1;
+    u0 = u0 | (int) ambe_d[i];
+  }
+
+  for (i = 12; i < 24; i++)
+  {
+    u1 = u1 << 1;
+    u1 = u1 | (int) ambe_d[i];
+  }
+
+  for (i = 24; i < 35; i++)
+  {
+    u2 = u2 << 1;
+    u2 = u2 | (int) ambe_d[i];
+  }
+
+  for (i = 35; i < 49; i++)
+  {
+    u3 = u3 << 1;
+    u3 = u3 | (int) ambe_d[i];
+  }
+
+  //bitchin'
+  int bitchk1, bitchk2;
+  bitchk1 = (u0 >> 6) & 0x3f;
+  bitchk2 = (u3 & 0xf);
+
+  #ifdef AMBE_DEBUG
+  fprintf (stderr, "BIT1 = %d BIT2 = %d ", bitchk1, bitchk2);
+  #endif
+
   // copy repeat from prev_mp
   cur_mp->repeat = prev_mp->repeat;
 
@@ -172,10 +208,19 @@ mbe_decodeAmbe2450Parms (char *ambe_d, mbe_parms * cur_mp, mbe_parms * prev_mp)
   b0 |= ambe_d[37]<<2;
   b0 |= ambe_d[38]<<1;
   b0 |= ambe_d[39];
-  if ((b0 >= 120) && (b0 <= 123)) // if w0 bits are 1111000, 1111001, 1111010 or 1111011, frame is erasure
+
+  if (bitchk1 == 63 && bitchk2 == 0)
+  {
+    #ifdef AMBE_DEBUG
+    fprintf (stderr,"Tone Frame 2\n");
+    #endif
+    return (7);
+  }
+
+  else if ((b0 >= 120) && (b0 <= 123)) // if w0 bits are 1111000, 1111001, 1111010 or 1111011, frame is erasure --  this is not entirely correct, tones are identified as erasures here
     {
 #ifdef AMBE_DEBUG
-      fprintf (stderr,"Erasure Frame\n");
+      fprintf (stderr,"Erasure Frame b0 = %d\n", b0);
 #endif
       return (2);
     }
@@ -194,10 +239,11 @@ mbe_decodeAmbe2450Parms (char *ambe_d, mbe_parms * cur_mp, mbe_parms * prev_mp)
           cur_mp->Vl[l] = 0;
         }
     }
+  //the below check doesn't seem to be entirely representative of all tones (could be entirely wrong)
   else if ((b0 == 126) || (b0 == 127)) // if w0 bits are 1111110 or 1111111, frame is tone
     {
 #ifdef AMBE_DEBUG
-      fprintf (stderr,"Tone Frame\n");
+      fprintf (stderr,"Tone Frame 1\n");
 #endif
       return (3);
     }
@@ -605,7 +651,7 @@ mbe_processAmbe2450Dataf (float *aout_buf, int *errs, int *errs2, char *err_str,
       err_str++;
       cur_mp->repeat = 0;
     }
-  else if (bad == 3)
+  else if (bad == 3 || bad == 7)
     {
       // Tone Frame
       *err_str = 'T';
@@ -641,6 +687,13 @@ mbe_processAmbe2450Dataf (float *aout_buf, int *errs, int *errs2, char *err_str,
           mbe_initMbeParms (cur_mp, prev_mp, prev_mp_enhanced);
         }
     }
+
+  else if (bad == 7) //leaving return as seperate from the 3 tone value since I can't validate those b0 values as tones
+  {
+    //synthesize tone
+    mbe_synthesizeTonef (aout_buf, ambe_d, cur_mp);
+    mbe_moveMbeParms (cur_mp, prev_mp);
+  }
   else
     {
       mbe_synthesizeSilencef (aout_buf);

@@ -17,8 +17,7 @@
 
 #ifndef _MBELIB_H
 #define _MBELIB_H
-//increment to 1.3.2  dev build for testing changes
-#define MBELIB_VERSION "1.3.2"
+#define MBELIB_VERSION "1.3.3T"
 
 struct mbe_parameters
 {
@@ -33,6 +32,7 @@ struct mbe_parameters
   float gamma;
   int un;
   int repeat;
+  int swn; //sine wave increment for tones
 };
 
 typedef struct mbe_parameters mbe_parms;
@@ -104,6 +104,7 @@ void mbe_moveMbeParms (mbe_parms * cur_mp, mbe_parms * prev_mp);
 void mbe_useLastMbeParms (mbe_parms * cur_mp, mbe_parms * prev_mp);
 void mbe_initMbeParms (mbe_parms * cur_mp, mbe_parms * prev_mp, mbe_parms * prev_mp_enhanced);
 void mbe_spectralAmpEnhance (mbe_parms * cur_mp);
+void mbe_synthesizeTonef (float *aout_buf, char *ambe_d, mbe_parms * cur_mp);
 void mbe_synthesizeSilencef (float *aout_buf);
 void mbe_synthesizeSilence (short *aout_buf);
 void mbe_synthesizeSpeechf (float *aout_buf, mbe_parms * cur_mp, mbe_parms * prev_mp, int uvquality);

@@ -1,5 +1,5 @@
+cmake_minimum_required(VERSION 3.10.2)
 project(mbe)
-cmake_minimum_required(VERSION 2.6)
 
 if(MSVC)
     # needed for M_PI macro

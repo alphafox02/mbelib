@@ -52,7 +52,7 @@ mbe_moveMbeParms (mbe_parms * cur_mp, mbe_parms * prev_mp)
 {
 
   int l;
-
+  prev_mp->swn = cur_mp->swn;
   prev_mp->w0 = cur_mp->w0;
   prev_mp->L = cur_mp->L;
   prev_mp->K = cur_mp->K;       // necessary?
@@ -74,7 +74,7 @@ mbe_useLastMbeParms (mbe_parms * cur_mp, mbe_parms * prev_mp)
 {
 
   int l;
-
+  cur_mp->swn = prev_mp->swn;
   cur_mp->w0 = prev_mp->w0;
   cur_mp->L = prev_mp->L;
   cur_mp->K = prev_mp->K;       // necessary?
@@ -91,25 +91,24 @@ mbe_useLastMbeParms (mbe_parms * cur_mp, mbe_parms * prev_mp)
     }
 }
 
-void
-mbe_initMbeParms (mbe_parms * cur_mp, mbe_parms * prev_mp, mbe_parms * prev_mp_enhanced)
+void mbe_initMbeParms (mbe_parms * cur_mp, mbe_parms * prev_mp, mbe_parms * prev_mp_enhanced)
 {
 
   int l;
-
-  prev_mp->w0 = 0.09378;
-  prev_mp->L = 30;
-  prev_mp->K = 10;
-  prev_mp->gamma = (float) 0;
+  cur_mp->swn = 0;
+  cur_mp->w0 = 0.09378;
+  cur_mp->L = 30;
+  cur_mp->K = 10;
+  cur_mp->gamma = (float) 0;
   for (l = 0; l <= 56; l++)
-    {
-      prev_mp->Ml[l] = (float) 0;
-      prev_mp->Vl[l] = 0;
-      prev_mp->log2Ml[l] = (float) 0;   // log2 of 1 == 0
-      prev_mp->PHIl[l] = (float) 0;
-      prev_mp->PSIl[l] = (M_PI / (float) 2);
-    }
-  prev_mp->repeat = 0;
+  {
+    cur_mp->Ml[l] = (float) 0;
+    cur_mp->Vl[l] = 0;
+    cur_mp->log2Ml[l] = (float) 0;   // log2 of 1 == 0
+    cur_mp->PHIl[l] = (float) 0;
+    cur_mp->PSIl[l] = (M_PI / (float) 2);
+  }
+  cur_mp->repeat = 0;
   mbe_moveMbeParms (prev_mp, cur_mp);
   mbe_moveMbeParms (prev_mp, prev_mp_enhanced);
 }
@@ -182,6 +181,219 @@ mbe_spectralAmpEnhance (mbe_parms * cur_mp)
     {
       cur_mp->Ml[l] = gamma * cur_mp->Ml[l];
     }
+}
+
+//adapted from Boatbod OP25
+void mbe_synthesizeTonef (float *aout_buf, char *ambe_d, mbe_parms * cur_mp)
+{
+  int i, n;
+  float *aout_buf_p;
+
+  int u0, u1, u2, u3;
+  u0 = u1 = u2 = u3 = 0;
+
+  for (i = 0; i < 12; i++)
+  {
+    u0 = u0 << 1;
+    u0 = u0 | (int) ambe_d[i];
+  }
+
+  for (i = 12; i < 24; i++)
+  {
+    u1 = u1 << 1;
+    u1 = u1 | (int) ambe_d[i];
+  }
+
+  for (i = 24; i < 35; i++)
+  {
+    u2 = u2 << 1;
+    u2 = u2 | (int) ambe_d[i];
+  }
+
+  for (i = 35; i < 49; i++)
+  {
+    u3 = u3 << 1;
+    u3 = u3 | (int) ambe_d[i];
+  }
+
+  int AD, ID0, ID1, ID2, ID3, ID4;
+  AD = ((u0 & 0x3f) << 1) + ((u3 >> 4) & 0x1);
+  ID0 = 0;
+  ID1 = ((u1 & 0xfff) >> 4);
+  ID2 = ((u1 & 0xf) << 4) + ((u2 >> 7) & 0xf);
+  ID3 = ((u2 & 0x7f) << 1) + ((u2 >> 13) & 0x1);
+  ID4 = ((u3 & 0x1fe0) >> 5);
+
+
+  int en;
+  float step1, step2, sample, amplitude;
+  float freq1 = 0, freq2 = 0;
+
+  #ifdef DISABLE_AMBE_TONES //generate silence if tones disabled
+  aout_buf_p = aout_buf;
+  for (n = 0; n < 160; n++)
+  {
+    *aout_buf_p = (float) 0;
+    aout_buf_p++;
+  }
+  return;
+  #endif
+
+  switch(ID1) //using ID1 as a placeholder until check is coded
+  {
+    // single tones, set frequency
+    case 5:
+        freq1 = 156.25; freq2 = freq1;
+        break;
+    case 6:
+        freq1 = 187.5; freq2 = freq1;
+        break;
+    // DTMF
+    case 128:
+        freq1 = 1336; freq2 = 941;
+        break;
+    case 129:
+        freq1 = 1209; freq2 = 697;
+        break;
+    case 130:
+        freq1 = 1336; freq2 = 697;
+        break;
+    case 131:
+        freq1 = 1477; freq2 = 697;
+        break;
+    case 132:
+        freq1 = 1209; freq2 = 770;
+        break;
+    case 133:
+        freq1 = 1336; freq2 = 770;
+        break;
+    case 134:
+        freq1 = 1477; freq2 = 770;
+        break;
+    case 135:
+        freq1 = 1209; freq2 = 852;
+        break;
+    case 136:
+        freq1 = 1336; freq2 = 852;
+        break;
+    case 137:
+        freq1 = 1477; freq2 = 852;
+        break;
+    case 138:
+        freq1 = 1633; freq2 = 697;
+        break;
+    case 139:
+        freq1 = 1633; freq2 = 770;
+        break;
+    case 140:
+        freq1 = 1633; freq2 = 852;
+        break;
+    case 141:
+        freq1 = 1633; freq2 = 941;
+        break;
+    case 142:
+        freq1 = 1209; freq2 = 941;
+        break;
+    case 143:
+        freq1 = 1477; freq2 = 941;
+        break;
+    // KNOX
+    case 144:
+        freq1 = 1162; freq2 = 820;
+        break;
+    case 145:
+        freq1 = 1052; freq2 = 606;
+        break;
+    case 146:
+        freq1 = 1162; freq2 = 606;
+        break;
+    case 147:
+        freq1 = 1279; freq2 = 606;
+        break;
+    case 148:
+        freq1 = 1052; freq2 = 672;
+        break;
+    case 149:
+        freq1 = 1162; freq2 = 672;
+        break;
+    case 150:
+        freq1 = 1279; freq2 = 672;
+        break;
+    case 151:
+        freq1 = 1052; freq2 = 743;
+        break;
+    case 152:
+        freq1 = 1162; freq2 = 743;
+        break;
+    case 153:
+        freq1 = 1279; freq2 = 743;
+        break;
+    case 154:
+        freq1 = 1430; freq2 = 606;
+        break;
+    case 155:
+        freq1 = 1430; freq2 = 672;
+        break;
+    case 156:
+        freq1 = 1430; freq2 = 743;
+        break;
+    case 157:
+        freq1 = 1430; freq2 = 820;
+        break;
+    case 158:
+        freq1 = 1052; freq2 = 820;
+        break;
+    case 159:
+        freq1 = 1279; freq2 = 820;
+        break;
+    // dual tones
+    case 160:
+        freq1 = 440; freq2 = 350;
+        break;
+    case 161:
+        freq1 = 480; freq2 = 440;
+        break;
+    case 162:
+        freq1 = 620; freq2 = 480;
+        break;
+    case 163:
+        freq1 = 490; freq2 = 350;
+        break;
+    // zero amplitude
+    case 255:
+        freq1 = 0; freq2 = 0;
+        break;
+    // single tones, calculated frequency
+    default:
+        if ((ID1 >= 7) && (ID1 <= 122))
+        {
+          freq1 = 31.25 * ID1; freq2 = freq1;
+        }
+  }
+
+  // Zero Amplitude and unimplemented tones
+  if ((freq1 == 0) && (freq2 == 0))
+  {
+    aout_buf_p = aout_buf;
+    for (n = 0; n < 160; n++)
+    {
+      *aout_buf_p = (float) 0;
+      aout_buf_p++;
+    }
+    return;
+  }
+  // Synthesize tones
+  step1 = 2 * M_PI * freq1 / 8000.0f;
+  step2 = 2 * M_PI * freq2 / 8000.0f;
+  amplitude = AD * 75.0f; //
+  aout_buf_p = aout_buf;
+  for (n = 0; n < 160; n++)
+  {
+    *aout_buf_p = (float) ( amplitude * (sin((cur_mp->swn) * step1)/2 + sin((cur_mp->swn) * step2)/2) );
+    *aout_buf_p = *aout_buf_p / 6.0f;
+    aout_buf_p++;
+    cur_mp->swn++;
+  }
 }
 
 void

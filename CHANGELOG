@@ -1,5 +1,11 @@
+1.3.3T:
+	Add AMBE+2 tones (adapted from Boatbod OP25)
+
+	1.3.2: 
+	Disable/Remove Tests
+
 1.3.1:
-	Redirect all printf to stderr (	Change all printf to fprintf(stderr,)
+	Redirect all printf to stderr (	Change all printf to fprintf(stderr,) )
 	Increment to 1.3.1 to make it easy to differentiate if this particular version is installed
 
 1.3.0:

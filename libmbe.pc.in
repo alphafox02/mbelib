@@ -3,7 +3,7 @@ includedir=@CMAKE_INSTALL_FULL_INCLUDEDIR@
 
 Name: libMBE
 Description: AMBE and IMBE vocoder
-Version: 1.3.2
+Version: 1.3.3T
 
 Libs: -L${libdir} -lmbe
 Libs.private: -lm
