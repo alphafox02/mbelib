@@ -47,47 +47,48 @@ mbe_printVersion (char *str)
   sprintf (str, "%s", MBELIB_VERSION);
 }
 
-void
-mbe_moveMbeParms (mbe_parms * cur_mp, mbe_parms * prev_mp)
+//renamed prev_mp and cur_mp parameters for move and last to make it clearer which parameter is being affected
+//I had errouneously thought there was an error when init called move, but the input value of prev and cur were opposite
+//I believe this has fixed that error and also helps alleviate confusion for what move and last do
+void mbe_moveMbeParms (mbe_parms * in, mbe_parms * out)
 {
 
   int l;
-  prev_mp->swn = cur_mp->swn;
-  prev_mp->w0 = cur_mp->w0;
-  prev_mp->L = cur_mp->L;
-  prev_mp->K = cur_mp->K;       // necessary?
-  prev_mp->Ml[0] = (float) 0;
-  prev_mp->gamma = cur_mp->gamma;
-  prev_mp->repeat = cur_mp->repeat;
+  out->swn = in->swn;
+  out->w0 = in->w0;
+  out->L = in->L;
+  out->K = in->K;
+  out->Ml[0] = (float) 0;
+  out->gamma = in->gamma;
+  out->repeat = in->repeat;
   for (l = 0; l <= 56; l++)
     {
-      prev_mp->Ml[l] = cur_mp->Ml[l];
-      prev_mp->Vl[l] = cur_mp->Vl[l];
-      prev_mp->log2Ml[l] = cur_mp->log2Ml[l];
-      prev_mp->PHIl[l] = cur_mp->PHIl[l];
-      prev_mp->PSIl[l] = cur_mp->PSIl[l];
+      out->Ml[l] = in->Ml[l];
+      out->Vl[l] = in->Vl[l];
+      out->log2Ml[l] = in->log2Ml[l];
+      out->PHIl[l] = in->PHIl[l];
+      out->PSIl[l] = in->PSIl[l];
     }
 }
 
-void
-mbe_useLastMbeParms (mbe_parms * cur_mp, mbe_parms * prev_mp)
+void mbe_useLastMbeParms (mbe_parms * out, mbe_parms * in)
 {
 
   int l;
-  cur_mp->swn = prev_mp->swn;
-  cur_mp->w0 = prev_mp->w0;
-  cur_mp->L = prev_mp->L;
-  cur_mp->K = prev_mp->K;       // necessary?
-  cur_mp->Ml[0] = (float) 0;
-  cur_mp->gamma = prev_mp->gamma;
-  cur_mp->repeat = prev_mp->repeat;
+  out->swn = in->swn;
+  out->w0 = in->w0;
+  out->L = in->L;
+  out->K = in->K;
+  out->Ml[0] = (float) 0;
+  out->gamma = in->gamma;
+  out->repeat = in->repeat;
   for (l = 0; l <= 56; l++)
     {
-      cur_mp->Ml[l] = prev_mp->Ml[l];
-      cur_mp->Vl[l] = prev_mp->Vl[l];
-      cur_mp->log2Ml[l] = prev_mp->log2Ml[l];
-      cur_mp->PHIl[l] = prev_mp->PHIl[l];
-      cur_mp->PSIl[l] = prev_mp->PSIl[l];
+      out->Ml[l] = in->Ml[l];
+      out->Vl[l] = in->Vl[l];
+      out->log2Ml[l] = in->log2Ml[l];
+      out->PHIl[l] = in->PHIl[l];
+      out->PSIl[l] = in->PSIl[l];
     }
 }
 
@@ -95,21 +96,21 @@ void mbe_initMbeParms (mbe_parms * cur_mp, mbe_parms * prev_mp, mbe_parms * prev
 {
 
   int l;
-  cur_mp->swn = 0;
-  cur_mp->w0 = 0.09378;
-  cur_mp->L = 30;
-  cur_mp->K = 10;
-  cur_mp->gamma = (float) 0;
+  prev_mp->swn = 0;
+  prev_mp->w0 = 0.09378;
+  prev_mp->L = 30;
+  prev_mp->K = 10;
+  prev_mp->gamma = (float) 0;
   for (l = 0; l <= 56; l++)
-  {
-    cur_mp->Ml[l] = (float) 0;
-    cur_mp->Vl[l] = 0;
-    cur_mp->log2Ml[l] = (float) 0;   // log2 of 1 == 0
-    cur_mp->PHIl[l] = (float) 0;
-    cur_mp->PSIl[l] = (M_PI / (float) 2);
-  }
-  cur_mp->repeat = 0;
-  mbe_moveMbeParms (prev_mp, cur_mp);
+    {
+      prev_mp->Ml[l] = (float) 0;
+      prev_mp->Vl[l] = 0;
+      prev_mp->log2Ml[l] = (float) 0;   // log2 of 1 == 0
+      prev_mp->PHIl[l] = (float) 0;
+      prev_mp->PSIl[l] = (M_PI / (float) 2);
+    }
+  prev_mp->repeat = 0;
+  mbe_moveMbeParms (prev_mp, cur_mp); //when calling move, the first parameter is the input and the second is the value that is assigned the value of the input
   mbe_moveMbeParms (prev_mp, prev_mp_enhanced);
 }
 
