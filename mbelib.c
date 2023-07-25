@@ -225,6 +225,8 @@ void mbe_synthesizeTonef (float *aout_buf, char *ambe_d, mbe_parms * cur_mp)
   ID3 = ((u2 & 0x7f) << 1) + ((u2 >> 13) & 0x1);
   ID4 = ((u3 & 0x1fe0) >> 5);
 
+  //TODO: Checkdown for matching ID values similar to Boatbod
+  //For now, just going to rely on err values
 
   int en;
   float step1, step2, sample, amplitude;

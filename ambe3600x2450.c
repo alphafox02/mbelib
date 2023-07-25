@@ -642,7 +642,8 @@ mbe_processAmbe2450Dataf (float *aout_buf, int *errs, int *errs2, char *err_str,
       *err_str = '=';
       err_str++;
     }
-
+  //it should be noted that in this context, 'bad' isn't referring to bad decode, but is a return
+  //value for which type of frame we should synthesize (voice, repeat, silence, erasure, or tone, etc)
   bad = mbe_decodeAmbe2450Parms (ambe_d, cur_mp, prev_mp);
   if (bad == 2)
     {
@@ -688,7 +689,7 @@ mbe_processAmbe2450Dataf (float *aout_buf, int *errs, int *errs2, char *err_str,
         }
     }
 
-  else if (bad == 7) //leaving return as seperate from the 3 tone value since I can't validate those b0 values as tones
+  else if (bad == 7 && *errs < 2 && *errs2 < 3) //only run if no more than x errs accumulated
   {
     //synthesize tone
     mbe_synthesizeTonef (aout_buf, ambe_d, cur_mp);
