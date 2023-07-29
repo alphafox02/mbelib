@@ -6,7 +6,7 @@ if(MSVC)
     add_definitions(-D_USE_MATH_DEFINES)
 endif()
 
-#use cmake option -DNOTONES=OFF to disable AMBE+2 Tones
+#use cmake option -DNOTONES=ON to disable AMBE+2 Tones
 option(NOTONES
     "Disable AMBE+2 Tones" OFF)
 if (NOTONES)
