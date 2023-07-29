@@ -2,7 +2,7 @@ PATENT NOTICE
 
 ```
 This source code is provided for educational purposes only.  It 
-isa written description of how certain voice encoding/decoding
+is a written description of how certain voice encoding/decoding
 algorithms could be implemented.  Executable objects compiled or
 derived from this package may be covered by one or more patents.
 Readers are strongly advised to check for any patent restrictions 

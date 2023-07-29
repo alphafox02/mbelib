@@ -6,6 +6,13 @@ if(MSVC)
     add_definitions(-D_USE_MATH_DEFINES)
 endif()
 
+#use cmake option -DNOTONES=OFF to disable AMBE+2 Tones
+option(NOTONES
+    "Disable AMBE+2 Tones" OFF)
+if (NOTONES)
+    add_definitions(-DDISABLE_AMBE_TONES) 
+endif ()
+
 FILE(GLOB SRCS *.c)
 
 include_directories("${PROJECT_SOURCE_DIR}")
