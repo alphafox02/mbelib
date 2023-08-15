@@ -385,6 +385,64 @@ void mbe_synthesizeTonef (float *aout_buf, char *ambe_d, mbe_parms * cur_mp)
     }
     return;
   }
+
+  //debug
+  // fprintf (stderr, "TONE ID = %d AD = %d \n", ID1, AD);
+
+  // Synthesize tones
+  step1 = 2 * M_PI * freq1 / 8000.0f;
+  step2 = 2 * M_PI * freq2 / 8000.0f;
+  amplitude = AD * 75.0f; //
+  aout_buf_p = aout_buf;
+  for (n = 0; n < 160; n++)
+  {
+    *aout_buf_p = (float) ( amplitude * (sin((cur_mp->swn) * step1)/2 + sin((cur_mp->swn) * step2)/2) );
+    *aout_buf_p = *aout_buf_p / 6.0f;
+    aout_buf_p++;
+    cur_mp->swn++;
+  }
+}
+
+//simplified version for single frequency dstar based on previous code writers guessword
+void mbe_synthesizeTonefdstar (float *aout_buf, char *ambe_d, mbe_parms * cur_mp, int ID1)
+{
+  int i, n;
+  float *aout_buf_p;
+
+  int AD = 103; //amplitude, just using a value I've seen in other tones
+  float step1, step2, sample, amplitude;
+  float freq1 = 0, freq2 = 0;
+
+  #ifdef DISABLE_AMBE_TONES //generate silence if tones disabled
+  aout_buf_p = aout_buf;
+  for (n = 0; n < 160; n++)
+  {
+    *aout_buf_p = (float) 0;
+    aout_buf_p++;
+  }
+  return;
+  #endif
+
+  switch(ID1)
+  {
+    // single tones, set frequency
+    case 5:
+        freq1 = 156.25; freq2 = freq1;
+        break;
+    case 6:
+        freq1 = 187.5; freq2 = freq1;
+        break;
+    // single tones, calculated frequency
+    default:
+        if ((ID1 >= 7) && (ID1 <= 122))
+        {
+          freq1 = 31.25 * ID1; freq2 = freq1;
+        }
+  }
+
+  //debug
+  // fprintf (stderr, "TONE ID = %d AD = %d \n", ID1, AD);
+
   // Synthesize tones
   step1 = 2 * M_PI * freq1 / 8000.0f;
   step2 = 2 * M_PI * freq2 / 8000.0f;

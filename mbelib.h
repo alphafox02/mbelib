@@ -17,7 +17,7 @@
 
 #ifndef _MBELIB_H
 #define _MBELIB_H
-#define MBELIB_VERSION "1.3.3T"
+#define MBELIB_VERSION "1.3.4"
 
 struct mbe_parameters
 {
@@ -105,6 +105,7 @@ void mbe_useLastMbeParms (mbe_parms * cur_mp, mbe_parms * prev_mp);
 void mbe_initMbeParms (mbe_parms * cur_mp, mbe_parms * prev_mp, mbe_parms * prev_mp_enhanced);
 void mbe_spectralAmpEnhance (mbe_parms * cur_mp);
 void mbe_synthesizeTonef (float *aout_buf, char *ambe_d, mbe_parms * cur_mp);
+void mbe_synthesizeTonefdstar (float *aout_buf, char *ambe_d, mbe_parms * cur_mp, int ID1);
 void mbe_synthesizeSilencef (float *aout_buf);
 void mbe_synthesizeSilence (short *aout_buf);
 void mbe_synthesizeSpeechf (float *aout_buf, mbe_parms * cur_mp, mbe_parms * prev_mp, int uvquality);

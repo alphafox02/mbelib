@@ -213,29 +213,30 @@ mbe_decodeAmbe2400Parms (char *ambe_d, mbe_parms * cur_mp, mbe_parms * prev_mp)
     b2 |= ambe_d[17];      //v0 1   a guess based on data
     // the order of the last 3 bits may really be 17,44,45 not 44,45,17 as above
 
-    fprintf(stderr,"Tone volume: %d; ", b2);
+    // fprintf(stderr,"Tone volume: %d; ", b2);
     if (b1 < 5)
     {
-      fprintf(stderr, "index: %d, was <5, invalid!\n", b1);
+      // fprintf(stderr, "index: %d, was <5, invalid!\n", b1);
       silence = 1;
     }
     else if ((b1 >= 5) && (b1 <= 122))
     {
-      fprintf(stderr, "index: %d, Single tone hz: %f\n", b1, (float)b1*31.25);
+      // fprintf(stderr, "index: %d, Single tone hz: %f\n", b1, (float)b1*31.25);
+      return (b1); //use the return value to play a single frquency valid tone
     }
     else if ((b1 > 122) && (b1 < 128))
     {
-      fprintf(stderr, "index: %d, was >122 and <128, invalid!\n", b1);
+      // fprintf(stderr, "index: %d, was >122 and <128, invalid!\n", b1);
       silence = 1;
     }
     else if ((b1 >= 128) && (b1 <= 163))
     {
-      fprintf(stderr, "index: %d, Dual tone\n", b1);
+      // fprintf(stderr, "index: %d, Dual tone\n", b1);
 	  // note: dual tone index is different on ambe(dstar) and ambe2+
     }
     else
     {
-      fprintf(stderr, "index: %d, was >163, invalid!\n", b1);
+      // fprintf(stderr, "index: %d, was >163, invalid!\n", b1);
       silence = 1;
     }
 
@@ -677,6 +678,13 @@ mbe_processAmbe2400Dataf (float *aout_buf, int *errs, int *errs2, char *err_str,
       err_str++;
       cur_mp->repeat = 0;
     }
+  //if we have a 'seemingly' valid single frequency tone and errors are within margin
+  else if ( (bad >= 7) && (bad <= 122) && (*errs < 2) && (*errs2 < 3)) //&& (*errs < 2) && (*errs2 < 3)
+  {
+    //synthesize single frequency tone based on previous code writers guessword, 'bad' is the tone ID value
+    mbe_synthesizeTonefdstar (aout_buf, ambe_d, cur_mp, bad);
+    mbe_moveMbeParms (cur_mp, prev_mp);
+  }
   else if (*errs2 > 3)
     {
       mbe_useLastMbeParms (cur_mp, prev_mp);

@@ -9,7 +9,7 @@ Readers are strongly advised to check for any patent restrictions
 or licencing requirements before compiling or using this source code.
 ```
 
-mbelib 1.3.3T w/ AMBE+2 Tone Synthesis
+mbelib 1.3.4 w/ AMBE and AMBE+2 Tone Synthesis
 
 ```
 mbelib supports the 7200x4400 bit/s codec used in P25 Phase 1,
@@ -30,4 +30,4 @@ make
 sudo make install
 ```
 
-To Disable AMBE+2 Tones, run cmake with option `cmake -DNOTONES=ON ..` when building.
+To Disable AMBE and AMBE+2 Tones, run cmake with option `cmake -DNOTONES=ON ..` when building.
