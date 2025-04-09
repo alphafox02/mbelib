@@ -1,4 +1,5 @@
-libmbe (1.3.4)
+libmbe (1.3.4) noble; urgency=low
+  * Updated for ambe_tones
 
 libmbe (1.3.0) bionic; urgency=low
 
